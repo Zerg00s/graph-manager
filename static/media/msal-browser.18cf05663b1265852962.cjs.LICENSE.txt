@@ -1,0 +1,3 @@
+/*! @azure/msal-browser v4.11.1 2025-04-29 */
+
+/*! @azure/msal-common v15.5.2 2025-04-29 */
