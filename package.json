@@ -24,8 +24,12 @@
   "scripts": {
     "start": "set PORT=5000 && react-scripts start",
     "build": "react-scripts build",
+    "build:github": "env-cmd -f .env.github react-scripts build",
+    "build:azure": "env-cmd -f .env.azure react-scripts build",
     "test": "react-scripts test",
-    "eject": "react-scripts eject"
+    "eject": "react-scripts eject",
+    "predeploy": "npm run build:github",
+    "deploy": "gh-pages -d build"
   },
   "eslintConfig": {
     "extends": [
@@ -45,6 +49,8 @@
     ]
   },
   "devDependencies": {
-    "@types/microsoft-graph": "^2.40.1"
+    "@types/microsoft-graph": "^2.40.1",
+    "env-cmd": "^10.1.0",
+    "gh-pages": "^6.3.0"
   }
 }
