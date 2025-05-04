@@ -235,7 +235,7 @@ function AuthenticatedApp() {
     <div className={styles.root}>
       <div className={styles.header}>
         <CodeRegular className={styles.icon} />
-        <Title1>Microsoft Graph Manager</Title1>
+        <Title1>Microsoft Grap API Manager</Title1>
       </div>
       
       {isAuthenticated ? (
