@@ -24,11 +24,13 @@ import {
   StorageRegular,
   BoxMultipleRegular,
   BoxSearchRegular,
+  PeopleRegular,
 } from '@fluentui/react-icons';
 import { SharePointSites } from './components/SharePointSites';
 import { Drives } from './components/Drives';
 import { SharePointContainers } from './components/SharePointContainers';
 import { ContainerTypes } from './components/ContainerTypes';
+import { Users } from './components/Users';
 import './App.css';
 
 // Create MSAL instance
@@ -93,7 +95,7 @@ const useStyles = makeStyles({
   },
 });
 
-type AppView = 'home' | 'sharepoint-sites' | 'drives' | 'sharepoint-containers' | 'container-types';
+type AppView = 'home' | 'sharepoint-sites' | 'drives' | 'sharepoint-containers' | 'container-types' | 'users';
 
 function SignInButton() {
   const { instance } = useMsal();
@@ -186,6 +188,8 @@ function AuthenticatedApp() {
         return <SharePointContainers onBack={() => navigateTo('home')} />;
       case 'container-types':
         return <ContainerTypes onBack={() => navigateTo('home')} />;
+      case 'users':
+        return <Users onBack={() => navigateTo('home')} />;
       default:
         return (
           <Card className={styles.card}>
@@ -223,6 +227,14 @@ function AuthenticatedApp() {
                 onClick={() => navigateTo('container-types')}
               >
                 View Container Types
+              </Button>
+              <Button
+                appearance="primary"
+                size="large"
+                icon={<PeopleRegular />}
+                onClick={() => navigateTo('users')}
+              >
+                List Users
               </Button>
               <SignOutButton />
             </div>

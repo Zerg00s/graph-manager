@@ -7,7 +7,7 @@ import {
   PublicClientApplication,
   InteractionType,
 } from '@azure/msal-browser';
-import { Site, Drive } from '@microsoft/microsoft-graph-types';
+import { Site, Drive, User } from '@microsoft/microsoft-graph-types';
 import { SharePointContainer } from '../types/microsoft-graph-extended';
 
 export interface PagedResult<T> {
@@ -25,7 +25,7 @@ export class GraphService {
       msal as PublicClientApplication,
       {
         account: msal.getAllAccounts()[0] ?? undefined,
-        scopes: ['User.Read', 'Sites.Read.All', 'Files.Read.All', 'FileStorageContainer.Selected'],
+        scopes: ['User.Read', 'Sites.Read.All', 'Files.Read.All', 'FileStorageContainer.Selected', 'User.ReadBasic.All'],
         interactionType: InteractionType.Popup, // or InteractionType.Redirect
       },
     );
@@ -211,5 +211,63 @@ export class GraphService {
       value: response.value,
       nextLink: response['@odata.nextLink'],
     };
+  }
+
+  async getUsers(
+    pageSize: number = 100,
+    nextLink?: string,
+  ): Promise<PagedResult<User>> {
+    try {
+      const response = nextLink
+        ? await this.graphClient.api(nextLink).get()
+        : await this.graphClient
+            .api('/users')
+            .select('id,displayName,userPrincipalName,jobTitle,department,officeLocation,mail')
+            .top(pageSize)
+            .get();
+
+      return {
+        value: response.value,
+        nextLink: response['@odata.nextLink'],
+      };
+    } catch (error: any) {
+      console.error('Error fetching users:', error);
+      
+      if (error.statusCode === 403 || error.message?.includes('403')) {
+        throw new Error('Access denied. The User.ReadBasic.All permission may be required.');
+      }
+      
+      throw error;
+    }
+  }
+
+  async searchUsers(
+    searchTerm: string,
+    pageSize: number = 100,
+  ): Promise<PagedResult<User>> {
+    try {
+      // Filter by displayName or userPrincipalName containing search term
+      const filter = `startswith(displayName,'${searchTerm}') or startswith(userPrincipalName,'${searchTerm}')`;
+      
+      const response = await this.graphClient
+        .api('/users')
+        .filter(filter)
+        .select('id,displayName,userPrincipalName,jobTitle,department,officeLocation,mail')
+        .top(pageSize)
+        .get();
+
+      return {
+        value: response.value,
+        nextLink: response['@odata.nextLink'],
+      };
+    } catch (error: any) {
+      console.error('Error searching users:', error);
+      
+      if (error.statusCode === 403 || error.message?.includes('403')) {
+        throw new Error('Access denied. The User.ReadBasic.All permission may be required.');
+      }
+      
+      throw error;
+    }
   }
 }

@@ -19,6 +19,7 @@
 .env.production.local
 .env.github
 .env.development
+.env.azure
 
 
 npm-debug.log*
